@@ -1,0 +1,67 @@
+project:
+  name: wildlife_species_identification
+  seed: 42
+
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  splits_dir: data/splits
+  image_size: [224, 224]
+  num_workers: 4
+  pin_memory: true
+
+  species_classes:
+    - AMERICAN GOLDFINCH
+    - BARN OWL
+    - CARMINE BEE-EATER
+    - DOWNY WOODPECKER
+    - EMPEROR PENGUIN
+    - FLAMINGO
+
+augmentation:
+  train:
+    horizontal_flip: true
+    vertical_flip: false
+    rotation_limit: 15
+    brightness_contrast: true
+    hue_saturation: true
+    gaussian_noise: true
+    random_crop: true
+    normalize:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+  val:
+    normalize:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+model:
+  architecture: resnet50
+  pretrained: true
+  freeze_backbone: false
+  dropout: 0.3
+  num_classes: 6
+
+training:
+  epochs: 50
+  batch_size: 32
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: adamw
+  scheduler: cosine
+  warmup_epochs: 5
+  early_stopping_patience: 10
+  mixed_precision: true
+  gradient_clip: 1.0
+  split_ratios:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+
+logging:
+  checkpoint_dir: checkpoints
+  results_dir: results
+  tensorboard_dir: results/tensorboard
+  log_interval: 10
+  save_top_k: 3
